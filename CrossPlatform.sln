@@ -1,0 +1,58 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GtkApp", "GtkApp\GtkApp.csproj", "{CB629A3A-A54F-40E0-B525-6C1AA4DADE0C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharedLib", "SharedLib\SharedLib.csproj", "{081639FD-CF4F-448F-B7D1-7B496ED379BC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorApp", "BlazorApp\BlazorApp.csproj", "{556AA10C-F319-411F-83BE-E2A312C4DA78}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Server", "Server\Server.csproj", "{0C24BE39-EFC9-408F-841D-19F2562657FA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorShared", "BlazorShared\BlazorShared.csproj", "{59706866-7A74-4200-9BAD-D68014505204}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorPhotino", "BlazorPhotino\BlazorPhotino.csproj", "{D5FBEE1C-32FB-4F08-B0FF-7862F50967DF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorMaui", "BlazorMaui\BlazorMaui.csproj", "{9D08DF81-D595-40A1-B43C-20D53D95EE69}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CB629A3A-A54F-40E0-B525-6C1AA4DADE0C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CB629A3A-A54F-40E0-B525-6C1AA4DADE0C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CB629A3A-A54F-40E0-B525-6C1AA4DADE0C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CB629A3A-A54F-40E0-B525-6C1AA4DADE0C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{081639FD-CF4F-448F-B7D1-7B496ED379BC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{081639FD-CF4F-448F-B7D1-7B496ED379BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{081639FD-CF4F-448F-B7D1-7B496ED379BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{081639FD-CF4F-448F-B7D1-7B496ED379BC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{556AA10C-F319-411F-83BE-E2A312C4DA78}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{556AA10C-F319-411F-83BE-E2A312C4DA78}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{556AA10C-F319-411F-83BE-E2A312C4DA78}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{556AA10C-F319-411F-83BE-E2A312C4DA78}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0C24BE39-EFC9-408F-841D-19F2562657FA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0C24BE39-EFC9-408F-841D-19F2562657FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0C24BE39-EFC9-408F-841D-19F2562657FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0C24BE39-EFC9-408F-841D-19F2562657FA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{59706866-7A74-4200-9BAD-D68014505204}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{59706866-7A74-4200-9BAD-D68014505204}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{59706866-7A74-4200-9BAD-D68014505204}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{59706866-7A74-4200-9BAD-D68014505204}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D5FBEE1C-32FB-4F08-B0FF-7862F50967DF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D5FBEE1C-32FB-4F08-B0FF-7862F50967DF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D5FBEE1C-32FB-4F08-B0FF-7862F50967DF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D5FBEE1C-32FB-4F08-B0FF-7862F50967DF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9D08DF81-D595-40A1-B43C-20D53D95EE69}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9D08DF81-D595-40A1-B43C-20D53D95EE69}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9D08DF81-D595-40A1-B43C-20D53D95EE69}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9D08DF81-D595-40A1-B43C-20D53D95EE69}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

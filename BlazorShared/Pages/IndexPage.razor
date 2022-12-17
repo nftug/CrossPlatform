@@ -1,0 +1,101 @@
+﻿@page "/"
+@using SharedLib.Services
+@inject AppSettings AppSettings
+
+<PageTitle>タイマー</PageTitle>
+
+@if (AppSettings.UseNavigationLock)
+{
+    <NavigationLock OnBeforeInternalNavigation="OnBeforeInternalNavigation" />
+}
+
+<MudContainer MaxWidth="MaxWidth.Small">
+    <MudGrid Class="mud-width-full" Spacing="1">
+        <MudItem xs="12" Class="d-flex align-center justify-center py-16">
+            <MudText Typo="Typo.h3">@_leftoverTimeText</MudText>
+        </MudItem>
+
+        <MudHidden Breakpoint="Breakpoint.SmAndDown" Invert="true">
+            <MudItem xs="12">
+                <MudButtonGroup Color="Color.Primary" Variant="Variant.Filled" Style="width: 100%" Class="mb-2">
+                    <MudButton FullWidth Disabled="!_hourUpButtonEnabled" OnClick="(() => KitchenTimer.Seconds += 3600)">
+                        Hour+
+                    </MudButton>
+                    <MudButton FullWidth Disabled="!_hourDownButtonEnabled" OnClick="(() => KitchenTimer.Seconds -= 3600)">
+                        Hour-
+                    </MudButton>
+                </MudButtonGroup>
+
+                <MudButtonGroup Color="Color.Primary" Variant="Variant.Filled" Style="width: 100%" Class="mb-2">
+                    <MudButton FullWidth Disabled="!_minUpButtonEnabled" OnClick="(() => KitchenTimer.Seconds += 60)">
+                        Minute+
+                    </MudButton>
+                    <MudButton FullWidth Disabled="!_minDownButtonEnabled" OnClick="(() => KitchenTimer.Seconds -= 60)">
+                        Minute-
+                    </MudButton>
+                </MudButtonGroup>
+
+                <MudButtonGroup Color="Color.Primary" Variant="Variant.Filled" Style="width: 100%" Class="mb-2">
+                    <MudButton FullWidth Disabled="!_secUpButtonEnabled" OnClick="(() => KitchenTimer.Seconds++)">
+                    Second+
+                </MudButton>
+                <MudButton FullWidth Disabled="!_secDownButtonEnabled" OnClick="(() => KitchenTimer.Seconds--)">
+                    Second-
+                </MudButton>
+                </MudButtonGroup>
+            </MudItem>
+        </MudHidden>
+
+        <MudHidden Breakpoint="Breakpoint.MdAndUp" Invert="true">
+            <MudItem xs="12">
+                <MudButtonGroup Color="Color.Primary" Variant="Variant.Filled" Style="width: 100%">
+                    <MudButton FullWidth Disabled="!_hourUpButtonEnabled" OnClick="(() => KitchenTimer.Seconds += 3600)">
+                        Hour+
+                    </MudButton>
+                    <MudButton FullWidth Disabled="!_hourDownButtonEnabled" OnClick="(() => KitchenTimer.Seconds -= 3600)">
+                        Hour-
+                    </MudButton>
+                    <MudButton FullWidth Disabled="!_minUpButtonEnabled" OnClick="(() => KitchenTimer.Seconds += 60)">
+                        Minute+
+                    </MudButton>
+                    <MudButton FullWidth Disabled="!_minDownButtonEnabled" OnClick="(() => KitchenTimer.Seconds -= 60)">
+                        Minute-
+                    </MudButton>
+                    <MudButton FullWidth Disabled="!_secUpButtonEnabled" OnClick="(() => KitchenTimer.Seconds++)">
+                        Second+
+                    </MudButton>
+                    <MudButton FullWidth Disabled="!_secDownButtonEnabled" OnClick="(() => KitchenTimer.Seconds--)">
+                        Second-
+                    </MudButton>
+                </MudButtonGroup>
+            </MudItem>
+        </MudHidden>
+
+        <MudItem xs="12">
+            <MudButtonGroup Style="width: 100%" OverrideStyles="false">
+                <MudButton FullWidth
+                           Variant="Variant.Filled"
+                           Color="Color.Success"
+                           Disabled="!_toggleButtonEnabled"
+                           OnClick="KitchenTimer.ToggleTimer">
+                    @_toggleButtonText
+                </MudButton>
+                <MudButton FullWidth
+                           Variant="Variant.Filled"
+                           Color="Color.Secondary"
+                           Disabled="!_resetButtonEnabled"
+                           OnClick="(() => KitchenTimer.Status = TimerStatus.Stopped)">
+                    Reset
+                </MudButton>
+            </MudButtonGroup>
+        </MudItem>
+
+        <MudItem xs="12" Class="d-flex align-center justify-center py-3">
+            <MudSwitch
+                @bind-Checked="@IsTimerGlobal"
+                Label="ページを離れても継続する"
+                Color="Color.Primary"
+                Disabled="KitchenTimer.Status != TimerStatus.Stopped" />
+        </MudItem>
+    </MudGrid>
+</MudContainer>
