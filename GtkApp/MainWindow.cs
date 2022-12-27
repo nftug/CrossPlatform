@@ -1,6 +1,7 @@
 using Gtk;
 using UI = Gtk.Builder.ObjectAttribute;
 using SharedLib.Services;
+using SharedLib.Enums;
 
 namespace GtkApp;
 
@@ -9,10 +10,10 @@ public class MainWindow : Window
     [UI] private readonly Label _label1 = null!;
     [UI] private readonly Button _buttonHourUp = null!;
     [UI] private readonly Button _buttonHourDown = null!;
-    [UI] private readonly Button _buttonMinUp = null!;
-    [UI] private readonly Button _buttonMinDown = null!;
-    [UI] private readonly Button _buttonSecUp = null!;
-    [UI] private readonly Button _buttonSecDown = null!;
+    [UI] private readonly Button _buttonMinuteUp = null!;
+    [UI] private readonly Button _buttonMinuteDown = null!;
+    [UI] private readonly Button _buttonSecondUp = null!;
+    [UI] private readonly Button _buttonSecondDown = null!;
     [UI] private readonly Button _buttonToggleTimer = null!;
     [UI] private readonly Button _buttonResetTimer = null!;
 
@@ -27,13 +28,13 @@ public class MainWindow : Window
 
         DeleteEvent += OnDeleteWindow;
         _buttonToggleTimer.ButtonReleaseEvent += (_, _) => _kitchenTimer.ToggleTimer();
-        _buttonResetTimer.ButtonReleaseEvent += (_, _) => _kitchenTimer.Status.Value = TimerStatus.Stopped;
+        _buttonResetTimer.ButtonReleaseEvent += (_, _) => _kitchenTimer.ResetTimer();
         _buttonHourUp.ButtonReleaseEvent += (_, _) => _kitchenTimer.Second.Value += 3600;
         _buttonHourDown.ButtonReleaseEvent += (_, _) => _kitchenTimer.Second.Value -= 3600;
-        _buttonMinUp.ButtonReleaseEvent += (_, _) => _kitchenTimer.Second.Value += 60;
-        _buttonMinDown.ButtonReleaseEvent += (_, _) => _kitchenTimer.Second.Value -= 60;
-        _buttonSecUp.ButtonReleaseEvent += (_, _) => _kitchenTimer.Second.Value++;
-        _buttonSecDown.ButtonReleaseEvent += (_, _) => _kitchenTimer.Second.Value--;
+        _buttonMinuteUp.ButtonReleaseEvent += (_, _) => _kitchenTimer.Second.Value += 60;
+        _buttonMinuteDown.ButtonReleaseEvent += (_, _) => _kitchenTimer.Second.Value -= 60;
+        _buttonSecondUp.ButtonReleaseEvent += (_, _) => _kitchenTimer.Second.Value++;
+        _buttonSecondDown.ButtonReleaseEvent += (_, _) => _kitchenTimer.Second.Value--;
     }
 
     private MainWindow(Builder builder) : base(builder.GetRawOwnedObject(nameof(MainWindow)))
@@ -85,12 +86,13 @@ public class MainWindow : Window
 
             _buttonToggleTimer.Sensitive = e.StartStopEnabled;
             _buttonResetTimer.Sensitive = e.ResetEnabled;
-            _buttonSecUp.Sensitive = e.SecUpEnabled;
-            _buttonSecDown.Sensitive = e.SecDownEnabled;
-            _buttonMinUp.Sensitive = e.MinUpEnabled;
-            _buttonMinDown.Sensitive = e.MinDownEnabled;
-            _buttonHourUp.Sensitive = e.HourUpEnabled;
-            _buttonHourDown.Sensitive = e.HourDownEnabled;
+
+            _buttonSecondUp.Sensitive = e.GetSetTimeEnabled(TimeUnit.Second, UpDown.Up);
+            _buttonSecondDown.Sensitive = e.GetSetTimeEnabled(TimeUnit.Second, UpDown.Down);
+            _buttonMinuteUp.Sensitive = e.GetSetTimeEnabled(TimeUnit.Minute, UpDown.Up);
+            _buttonMinuteDown.Sensitive = e.GetSetTimeEnabled(TimeUnit.Minute, UpDown.Down);
+            _buttonHourUp.Sensitive = e.GetSetTimeEnabled(TimeUnit.Hour, UpDown.Up);
+            _buttonHourDown.Sensitive = e.GetSetTimeEnabled(TimeUnit.Hour, UpDown.Down);
         });
     }
 

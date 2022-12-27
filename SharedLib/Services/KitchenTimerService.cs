@@ -2,6 +2,7 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
+using SharedLib.Enums;
 
 namespace SharedLib.Services;
 
@@ -93,12 +94,11 @@ public class TimerCombinedStatus
 
     public bool StartStopEnabled => Second > 0;
     public bool ResetEnabled => Second > 0 && !IsActivated;
-    public bool SecUpEnabled => !IsActivated;
-    public bool SecDownEnabled => Second > 0 && !IsActivated;
-    public bool MinUpEnabled => !IsActivated;
-    public bool MinDownEnabled => Second > 0 && !IsActivated;
-    public bool HourUpEnabled => !IsActivated && Second < 82800;
-    public bool HourDownEnabled => Second > 0 && !IsActivated;
+
+    public bool GetSetTimeEnabled(TimeUnit unit, UpDown upDown)
+        => upDown == UpDown.Down
+            ? Second > 0 && !IsActivated
+            : Second < TimeSpan.FromHours(24).TotalSeconds - (int)unit && !IsActivated;
 
     public bool IsActivated => Status == TimerStatus.Activated;
     public bool IsPaused => Status == TimerStatus.Paused;

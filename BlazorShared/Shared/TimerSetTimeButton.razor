@@ -1,0 +1,23 @@
+@using SharedLib.Services
+@using SharedLib.Enums
+
+<MudButton FullWidth Disabled="!GetEnabled(UpDown.Up)" OnClick="(() => OnClickButton(UpDown.Up))">
+    @(Unit)+
+</MudButton>
+<MudButton FullWidth Disabled="!GetEnabled(UpDown.Down)" OnClick="(() => OnClickButton(UpDown.Down))">
+    @(Unit)-
+</MudButton>
+
+@code {
+    [Parameter] public TimeUnit Unit { get; set; }
+    [CascadingParameter] public IKitchenTimerService KitchenTimer { get; set; } = null!;
+
+    bool GetEnabled(UpDown upDown)
+        => KitchenTimer.CombinedStatus.Value!.GetSetTimeEnabled(Unit, upDown);
+
+    void OnClickButton(UpDown upDown)
+    {
+        if (upDown == UpDown.Up) KitchenTimer.Second.Value += (int)Unit;
+        else KitchenTimer.Second.Value -= (int)Unit;
+    }
+}
