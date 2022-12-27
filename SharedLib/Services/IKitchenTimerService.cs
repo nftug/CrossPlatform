@@ -1,10 +1,15 @@
+using System.ComponentModel;
+using Reactive.Bindings;
+
 namespace SharedLib.Services;
 
-public interface IKitchenTimerService
+public interface IKitchenTimerService : IDisposable
 {
-    event EventHandler<SecondsChangeEventArgs>? SecondsChanged;
-    int Seconds { get; set; }
-    TimerStatus Status { get; set; }
+    ReactivePropertySlim<int> Second { get; }
+    ReactivePropertySlim<TimerStatus> Status { get; }
+    ReadOnlyReactivePropertySlim<TimerCombinedStatus?> CombinedStatus { get; }
+
     void ToggleTimer();
     event EventHandler? TimerEnded;
+    void ResetTimer();
 }

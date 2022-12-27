@@ -1,6 +1,9 @@
+using System.Reactive.Disposables;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Routing;
 using Microsoft.JSInterop;
+using Reactive.Bindings;
+using Reactive.Bindings.Extensions;
 using SharedLib.Services;
 
 namespace BlazorShared.Pages;
@@ -11,80 +14,56 @@ public partial class IndexPage : ComponentBase, IDisposable
     [Inject] private IKitchenTimerSingleton KitchenTimerSingleton { get; set; } = null!;
     [Inject] private IJSRuntime JSRuntime { get; set; } = null!;
 
+    private readonly CompositeDisposable _disposables = new();
     private IKitchenTimerService KitchenTimer = null!;
+    private TimerCombinedStatus _status = null!;
 
     private string? _leftoverTimeText;
     private string? _toggleButtonText;
-    private bool _toggleButtonEnabled;
-    private bool _resetButtonEnabled;
-    private bool _secUpButtonEnabled;
-    private bool _secDownButtonEnabled;
-    private bool _minUpButtonEnabled;
-    private bool _minDownButtonEnabled;
-    private bool _hourUpButtonEnabled;
-    private bool _hourDownButtonEnabled;
 
-    private bool _isTimerGlobal;
-    private bool IsTimerGlobal
-    {
-        get => _isTimerGlobal;
-        set
-        {
-            _isTimerGlobal = value;
-            OnAfterSetIsTimerGlobal();
-        }
-    }
+    private ReactivePropertySlim<bool> IsTimerGlobal { get; set; } = null!;
 
     protected override void OnInitialized()
     {
-        KitchenTimerTransient.SecondsChanged += OnChangeSeconds;
-        KitchenTimerSingleton.SecondsChanged += OnChangeSeconds;
+        KitchenTimerTransient.CombinedStatus.Subscribe(OnChangeTimerStatus);
+        KitchenTimerSingleton.CombinedStatus.Subscribe(OnChangeTimerStatus);
         KitchenTimerTransient.TimerEnded += OnEndedTimer;
 
-        _isTimerGlobal =
-            KitchenTimerSingleton.Seconds > 0 && KitchenTimerSingleton.Status != TimerStatus.Stopped;
-        OnAfterSetIsTimerGlobal();
+        IsTimerGlobal = new ReactivePropertySlim<bool>().AddTo(_disposables);
+        IsTimerGlobal.Subscribe(OnSetIsTimerGlobal);
+        IsTimerGlobal.Value =
+            KitchenTimerSingleton.Second.Value > 0
+            && KitchenTimerSingleton.Status.Value != TimerStatus.Stopped;
     }
 
     public void Dispose()
     {
-        KitchenTimerTransient.SecondsChanged -= OnChangeSeconds;
-        KitchenTimerSingleton.SecondsChanged -= OnChangeSeconds;
+        _disposables.Dispose();
         KitchenTimerTransient.TimerEnded -= OnEndedTimer;
         GC.SuppressFinalize(this);
     }
 
-    private void OnAfterSetIsTimerGlobal()
+    private void OnSetIsTimerGlobal(bool isTimerGlobal)
     {
         bool isFirstRender = KitchenTimer is null;
-        int seconds = KitchenTimer?.Seconds ?? 0;
+        int seconds = KitchenTimer?.Second.Value ?? 0;
 
-        KitchenTimer = _isTimerGlobal ? KitchenTimerSingleton : KitchenTimerTransient;
-        KitchenTimer.Seconds = isFirstRender ? KitchenTimer.Seconds : seconds;
+        KitchenTimer = isTimerGlobal ? KitchenTimerSingleton : KitchenTimerTransient;
+        KitchenTimer.Second.Value = isFirstRender ? KitchenTimer.Second.Value : seconds;
     }
 
-    private void OnChangeSeconds(object? sender, SecondsChangeEventArgs e)
+    private void OnChangeTimerStatus(TimerCombinedStatus? e)
     {
-        InvokeAsync(() =>
-        {
-            _leftoverTimeText = TimeSpan.FromSeconds(e.Seconds).ToString(@"hh\:mm\:ss");
+        if (e == null) return;
 
-            _toggleButtonText =
-                e.IsActivated ? "Pause"
-                : e.IsPaused ? "Restart"
-                : "Start";
+        _status = e;
+        _leftoverTimeText = TimeSpan.FromSeconds(e.Second).ToString(@"hh\:mm\:ss");
+        _toggleButtonText =
+            e.IsActivated ? "Pause"
+            : e.IsPaused ? "Restart"
+            : "Start";
 
-            _toggleButtonEnabled = e.Seconds > 0;
-            _resetButtonEnabled = e.Seconds > 0 && !e.IsActivated;
-            _secUpButtonEnabled = !e.IsActivated;
-            _secDownButtonEnabled = e.Seconds > 0 && !e.IsActivated;
-            _minUpButtonEnabled = !e.IsActivated;
-            _minDownButtonEnabled = e.Seconds > 0 && !e.IsActivated;
-            _hourUpButtonEnabled = !e.IsActivated;
-            _hourDownButtonEnabled = e.Seconds > 0 && !e.IsActivated;
-
-            StateHasChanged();
-        });
+        InvokeAsync(StateHasChanged);
     }
 
     private async void OnEndedTimer(object? sender, EventArgs e)
@@ -94,14 +73,14 @@ public partial class IndexPage : ComponentBase, IDisposable
 
     private async Task OnBeforeInternalNavigation(LocationChangingContext context)
     {
-        if (_isTimerGlobal) return;
-        if (KitchenTimerTransient.Status == TimerStatus.Stopped) return;
+        if (IsTimerGlobal.Value) return;
+        if (KitchenTimerTransient.Status.Value == TimerStatus.Stopped) return;
 
-        var previousStatus = KitchenTimerTransient.Status;
+        var previousStatus = KitchenTimerTransient.Status.Value;
 
-        KitchenTimerTransient.Status = TimerStatus.Paused;
+        KitchenTimerTransient.Status.Value = TimerStatus.Paused;
         bool result = await JSRuntime.InvokeAsync<bool>("confirm", "タイマーが動作中です。終了しますか？");
-        KitchenTimerTransient.Status = previousStatus;
+        KitchenTimerTransient.Status.Value = previousStatus;
 
         if (!result) context.PreventNavigation();
     }

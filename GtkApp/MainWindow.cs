@@ -22,20 +22,18 @@ public class MainWindow : Window
         : this(new Builder($"{nameof(MainWindow)}.glade"))
     {
         _kitchenTimer = kitchenTimer;
-        _kitchenTimer.SecondsChanged += OnChangeSeconds;
+        _kitchenTimer.CombinedStatus.Subscribe(OnChangeTimerStatus);
         _kitchenTimer.TimerEnded += OnEndedTimer;
 
         DeleteEvent += OnDeleteWindow;
         _buttonToggleTimer.ButtonReleaseEvent += (_, _) => _kitchenTimer.ToggleTimer();
-        _buttonResetTimer.ButtonReleaseEvent += (_, _) => _kitchenTimer.Status = TimerStatus.Stopped;
-        _buttonHourUp.ButtonReleaseEvent += (_, _) => _kitchenTimer.Seconds += 3600;
-        _buttonHourDown.ButtonReleaseEvent += (_, _) => _kitchenTimer.Seconds -= 3600;
-        _buttonMinUp.ButtonReleaseEvent += (_, _) => _kitchenTimer.Seconds += 60;
-        _buttonMinDown.ButtonReleaseEvent += (_, _) => _kitchenTimer.Seconds -= 60;
-        _buttonSecUp.ButtonReleaseEvent += (_, _) => _kitchenTimer.Seconds++;
-        _buttonSecDown.ButtonReleaseEvent += (_, _) => _kitchenTimer.Seconds--;
-
-        _kitchenTimer.Seconds = 0;
+        _buttonResetTimer.ButtonReleaseEvent += (_, _) => _kitchenTimer.Status.Value = TimerStatus.Stopped;
+        _buttonHourUp.ButtonReleaseEvent += (_, _) => _kitchenTimer.Second.Value += 3600;
+        _buttonHourDown.ButtonReleaseEvent += (_, _) => _kitchenTimer.Second.Value -= 3600;
+        _buttonMinUp.ButtonReleaseEvent += (_, _) => _kitchenTimer.Second.Value += 60;
+        _buttonMinDown.ButtonReleaseEvent += (_, _) => _kitchenTimer.Second.Value -= 60;
+        _buttonSecUp.ButtonReleaseEvent += (_, _) => _kitchenTimer.Second.Value++;
+        _buttonSecDown.ButtonReleaseEvent += (_, _) => _kitchenTimer.Second.Value--;
     }
 
     private MainWindow(Builder builder) : base(builder.GetRawOwnedObject(nameof(MainWindow)))
@@ -45,10 +43,10 @@ public class MainWindow : Window
 
     private void OnDeleteWindow(object sender, DeleteEventArgs a)
     {
-        if (_kitchenTimer.Status != TimerStatus.Stopped)
+        if (_kitchenTimer.Status.Value != TimerStatus.Stopped)
         {
-            var previousStatus = _kitchenTimer.Status;
-            _kitchenTimer.Status = TimerStatus.Paused;
+            var previousStatus = _kitchenTimer.Status.Value;
+            _kitchenTimer.Status.Value = TimerStatus.Paused;
 
             var md = new MessageDialog(this,
                 DialogFlags.DestroyWithParent, MessageType.Question,
@@ -59,21 +57,22 @@ public class MainWindow : Window
 
             if (result == ResponseType.No)
             {
-                _kitchenTimer.Status = previousStatus;
+                _kitchenTimer.Status.Value = previousStatus;
                 a.RetVal = true;
                 return;
             }
         }
 
-        _kitchenTimer.Status = TimerStatus.Stopped;
         Application.Quit();
     }
 
-    private void OnChangeSeconds(object? sender, SecondsChangeEventArgs e)
+    private void OnChangeTimerStatus(TimerCombinedStatus? e)
     {
+        if (e == null) return;
+
         Application.Invoke((_, _) =>
         {
-            _label1.Text = TimeSpan.FromSeconds(e.Seconds).ToString(@"hh\:mm\:ss");
+            _label1.Text = TimeSpan.FromSeconds(e.Second).ToString(@"hh\:mm\:ss");
 
             Title = !e.IsStopped
                 ? $"残り時間　{_label1.Text}{(e.IsPaused ? " (一時停止中)" : null)}"
@@ -84,14 +83,14 @@ public class MainWindow : Window
                 : e.IsPaused ? "Restart"
                 : "Start";
 
-            _buttonToggleTimer.Sensitive = e.Seconds > 0;
-            _buttonResetTimer.Sensitive = e.Seconds > 0 && !e.IsActivated;
-            _buttonSecUp.Sensitive = !e.IsActivated;
-            _buttonSecDown.Sensitive = e.Seconds > 0 && !e.IsActivated;
-            _buttonMinUp.Sensitive = !e.IsActivated;
-            _buttonMinDown.Sensitive = e.Seconds > 0 && !e.IsActivated;
-            _buttonHourUp.Sensitive = !e.IsActivated;
-            _buttonHourDown.Sensitive = e.Seconds > 0 && !e.IsActivated;
+            _buttonToggleTimer.Sensitive = e.StartStopEnabled;
+            _buttonResetTimer.Sensitive = e.ResetEnabled;
+            _buttonSecUp.Sensitive = e.SecUpEnabled;
+            _buttonSecDown.Sensitive = e.SecDownEnabled;
+            _buttonMinUp.Sensitive = e.MinUpEnabled;
+            _buttonMinDown.Sensitive = e.MinDownEnabled;
+            _buttonHourUp.Sensitive = e.HourUpEnabled;
+            _buttonHourDown.Sensitive = e.HourDownEnabled;
         });
     }
 

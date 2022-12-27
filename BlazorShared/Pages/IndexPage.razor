@@ -18,28 +18,28 @@
         <MudHidden Breakpoint="Breakpoint.SmAndDown" Invert="true">
             <MudItem xs="12">
                 <MudButtonGroup Color="Color.Primary" Variant="Variant.Filled" Style="width: 100%" Class="mb-2">
-                    <MudButton FullWidth Disabled="!_hourUpButtonEnabled" OnClick="(() => KitchenTimer.Seconds += 3600)">
+                    <MudButton FullWidth Disabled="!_status.HourUpEnabled" OnClick="(() => KitchenTimer.Second.Value += 3600)">
                         Hour+
                     </MudButton>
-                    <MudButton FullWidth Disabled="!_hourDownButtonEnabled" OnClick="(() => KitchenTimer.Seconds -= 3600)">
+                    <MudButton FullWidth Disabled="!_status.HourDownEnabled" OnClick="(() => KitchenTimer.Second.Value -= 3600)">
                         Hour-
                     </MudButton>
                 </MudButtonGroup>
 
                 <MudButtonGroup Color="Color.Primary" Variant="Variant.Filled" Style="width: 100%" Class="mb-2">
-                    <MudButton FullWidth Disabled="!_minUpButtonEnabled" OnClick="(() => KitchenTimer.Seconds += 60)">
+                    <MudButton FullWidth Disabled="!_status.MinUpEnabled" OnClick="(() => KitchenTimer.Second.Value += 60)">
                         Minute+
                     </MudButton>
-                    <MudButton FullWidth Disabled="!_minDownButtonEnabled" OnClick="(() => KitchenTimer.Seconds -= 60)">
+                    <MudButton FullWidth Disabled="!_status.MinDownEnabled" OnClick="(() => KitchenTimer.Second.Value -= 60)">
                         Minute-
                     </MudButton>
                 </MudButtonGroup>
 
                 <MudButtonGroup Color="Color.Primary" Variant="Variant.Filled" Style="width: 100%" Class="mb-2">
-                    <MudButton FullWidth Disabled="!_secUpButtonEnabled" OnClick="(() => KitchenTimer.Seconds++)">
+                    <MudButton FullWidth Disabled="!_status.SecUpEnabled" OnClick="(() => KitchenTimer.Second.Value++)">
                     Second+
                 </MudButton>
-                <MudButton FullWidth Disabled="!_secDownButtonEnabled" OnClick="(() => KitchenTimer.Seconds--)">
+                <MudButton FullWidth Disabled="!_status.SecDownEnabled" OnClick="(() => KitchenTimer.Second.Value--)">
                     Second-
                 </MudButton>
                 </MudButtonGroup>
@@ -49,22 +49,22 @@
         <MudHidden Breakpoint="Breakpoint.MdAndUp" Invert="true">
             <MudItem xs="12">
                 <MudButtonGroup Color="Color.Primary" Variant="Variant.Filled" Style="width: 100%">
-                    <MudButton FullWidth Disabled="!_hourUpButtonEnabled" OnClick="(() => KitchenTimer.Seconds += 3600)">
+                    <MudButton FullWidth Disabled="!_status.HourUpEnabled" OnClick="(() => KitchenTimer.Second.Value += 3600)">
                         Hour+
                     </MudButton>
-                    <MudButton FullWidth Disabled="!_hourDownButtonEnabled" OnClick="(() => KitchenTimer.Seconds -= 3600)">
+                    <MudButton FullWidth Disabled="!_status.HourDownEnabled" OnClick="(() => KitchenTimer.Second.Value -= 3600)">
                         Hour-
                     </MudButton>
-                    <MudButton FullWidth Disabled="!_minUpButtonEnabled" OnClick="(() => KitchenTimer.Seconds += 60)">
+                    <MudButton FullWidth Disabled="!_status.MinUpEnabled" OnClick="(() => KitchenTimer.Second.Value += 60)">
                         Minute+
                     </MudButton>
-                    <MudButton FullWidth Disabled="!_minDownButtonEnabled" OnClick="(() => KitchenTimer.Seconds -= 60)">
+                    <MudButton FullWidth Disabled="!_status.MinDownEnabled" OnClick="(() => KitchenTimer.Second.Value -= 60)">
                         Minute-
                     </MudButton>
-                    <MudButton FullWidth Disabled="!_secUpButtonEnabled" OnClick="(() => KitchenTimer.Seconds++)">
+                    <MudButton FullWidth Disabled="!_status.SecUpEnabled" OnClick="(() => KitchenTimer.Second.Value++)">
                         Second+
                     </MudButton>
-                    <MudButton FullWidth Disabled="!_secDownButtonEnabled" OnClick="(() => KitchenTimer.Seconds--)">
+                    <MudButton FullWidth Disabled="!_status.SecDownEnabled" OnClick="(() => KitchenTimer.Second.Value--)">
                         Second-
                     </MudButton>
                 </MudButtonGroup>
@@ -76,15 +76,15 @@
                 <MudButton FullWidth
                            Variant="Variant.Filled"
                            Color="Color.Success"
-                           Disabled="!_toggleButtonEnabled"
+                           Disabled="!_status.StartStopEnabled"
                            OnClick="KitchenTimer.ToggleTimer">
                     @_toggleButtonText
                 </MudButton>
                 <MudButton FullWidth
                            Variant="Variant.Filled"
                            Color="Color.Secondary"
-                           Disabled="!_resetButtonEnabled"
-                           OnClick="(() => KitchenTimer.Status = TimerStatus.Stopped)">
+                           Disabled="!_status.ResetEnabled"
+                           OnClick="(() => KitchenTimer.ResetTimer())">
                     Reset
                 </MudButton>
             </MudButtonGroup>
@@ -92,10 +92,10 @@
 
         <MudItem xs="12" Class="d-flex align-center justify-center py-3">
             <MudSwitch
-                @bind-Checked="@IsTimerGlobal"
+                @bind-Checked="@IsTimerGlobal.Value"
                 Label="ページを離れても継続する"
                 Color="Color.Primary"
-                Disabled="KitchenTimer.Status != TimerStatus.Stopped" />
+                Disabled="KitchenTimer.Status.Value != TimerStatus.Stopped" />
         </MudItem>
     </MudGrid>
 </MudContainer>

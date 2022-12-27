@@ -24,7 +24,6 @@ public partial class MainLayout : LayoutComponentBase, IDisposable
     {
         LayoutService.MajorUpdateOccurred -= LayoutServiceOnMajorUpdateOccurred;
         KitchenTimer.TimerEnded -= OnEndedTimer;
-        KitchenTimer.Status = TimerStatus.Stopped;
         GC.SuppressFinalize(this);
     }
 

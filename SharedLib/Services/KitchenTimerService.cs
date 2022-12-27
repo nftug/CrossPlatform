@@ -1,63 +1,76 @@
-using Timer = System.Timers.Timer;
+using System.Reactive.Disposables;
+using System.Reactive.Linq;
+using Reactive.Bindings;
+using Reactive.Bindings.Extensions;
 
 namespace SharedLib.Services;
 
 public class KitchenTimerService : IKitchenTimerTransient, IKitchenTimerSingleton
 {
-    private Timer? _timer;
+    private readonly CompositeDisposable _disposables = new();
+    public readonly ReactiveTimer _timer;
 
-    public event EventHandler<SecondsChangeEventArgs>? SecondsChanged;
-    private int _seconds;
-    public int Seconds
+    public ReactivePropertySlim<int> Second { get; }
+    public ReactivePropertySlim<TimerStatus> Status { get; }
+    public ReadOnlyReactivePropertySlim<TimerCombinedStatus?> CombinedStatus { get; }
+
+    public KitchenTimerService()
     {
-        get => _seconds;
-        set
+        Second = new ReactivePropertySlim<int>().AddTo(_disposables);
+        Status = new ReactivePropertySlim<TimerStatus>().AddTo(_disposables);
+
+        CombinedStatus = Second
+            .CombineLatest(Status, (second, status) => new TimerCombinedStatus(second, status))
+            .ToReadOnlyReactivePropertySlim()
+            .AddTo(_disposables);
+
+        _timer = new ReactiveTimer(TimeSpan.FromSeconds(1)).AddTo(_disposables);
+        _timer.Subscribe(async _ =>
         {
-            _seconds = value > 0 ? value : 0;
-            SecondsChanged?.Invoke(this, new() { Seconds = _seconds, Status = Status });
-        }
+            Second.Value--;
+
+            if (Second.Value <= 0)
+            {
+                Status.Value = TimerStatus.Stopped;
+                await Task.Delay(10);
+                TimerEnded?.Invoke(this, EventArgs.Empty);
+            }
+        });
+
+        Second.Where(v => v < 0).Subscribe(_ => Second.Value = 0);
+
+        Status
+            .Where(v => v == TimerStatus.Activated)
+            .Subscribe(_ => _timer.Start(TimeSpan.FromSeconds(1)));
+        Status
+            .Where(v => v != TimerStatus.Activated)
+            .Subscribe(_ => _timer.Stop());
+        Status
+            .Where(v => v == TimerStatus.Stopped)
+            .Subscribe(_ => Second.Value = 0);
+
+        CombinedStatus
+            .Subscribe(v => Console.WriteLine($"sec: {v!.Second}, status: {v.Status}"));
     }
 
-    private bool _isPaused;
-    public TimerStatus Status
+    public void Dispose()
     {
-        get =>
-            _timer?.Enabled == true ? TimerStatus.Activated
-            : _isPaused ? TimerStatus.Paused
-            : TimerStatus.Stopped;
-        set
-        {
-            if (value == TimerStatus.Activated)
-            {
-                _timer = new Timer(1000);
-                _timer.Elapsed += (_, _) => CountDown();
-                _timer.Enabled = true;
-            }
-            else if (_timer != null)
-            {
-                _timer.Enabled = false;
-                _timer.Dispose();
-            }
-            _isPaused = value == TimerStatus.Paused;
-            Seconds = value == TimerStatus.Stopped ? 0 : _seconds;
-        }
+        _disposables.Dispose();
+        GC.SuppressFinalize(this);
     }
 
     public void ToggleTimer()
     {
-        Status = Status == TimerStatus.Activated ? TimerStatus.Paused : TimerStatus.Activated;
+        Status.Value = Status.Value == TimerStatus.Activated ? TimerStatus.Paused : TimerStatus.Activated;
+    }
+
+    public void ResetTimer()
+    {
+        Second.Value = 0;
+        Status.Value = TimerStatus.Stopped;
     }
 
     public event EventHandler? TimerEnded;
-    private void CountDown()
-    {
-        Seconds--;
-        if (_seconds == 0)
-        {
-            TimerEnded?.Invoke(this, EventArgs.Empty);
-            Status = TimerStatus.Stopped;
-        }
-    }
 }
 
 public enum TimerStatus
@@ -67,10 +80,25 @@ public enum TimerStatus
     Paused,
 }
 
-public class SecondsChangeEventArgs : EventArgs
+public class TimerCombinedStatus
 {
-    public int Seconds { get; init; }
+    public int Second { get; init; }
     public TimerStatus Status { get; init; }
+
+    public TimerCombinedStatus(int second, TimerStatus status)
+    {
+        Second = second;
+        Status = status;
+    }
+
+    public bool StartStopEnabled => Second > 0;
+    public bool ResetEnabled => Second > 0 && !IsActivated;
+    public bool SecUpEnabled => !IsActivated;
+    public bool SecDownEnabled => Second > 0 && !IsActivated;
+    public bool MinUpEnabled => !IsActivated;
+    public bool MinDownEnabled => Second > 0 && !IsActivated;
+    public bool HourUpEnabled => !IsActivated && Second < 82800;
+    public bool HourDownEnabled => Second > 0 && !IsActivated;
 
     public bool IsActivated => Status == TimerStatus.Activated;
     public bool IsPaused => Status == TimerStatus.Paused;
