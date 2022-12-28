@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorPhotino", "BlazorPhot
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorMaui", "BlazorMaui\BlazorMaui.csproj", "{9D08DF81-D595-40A1-B43C-20D53D95EE69}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WpfApp", "WpfApp\WpfApp.csproj", "{EE842F07-96C3-4A83-969A-4B82BD29EB90}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -54,5 +56,9 @@ Global
 		{9D08DF81-D595-40A1-B43C-20D53D95EE69}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9D08DF81-D595-40A1-B43C-20D53D95EE69}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9D08DF81-D595-40A1-B43C-20D53D95EE69}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EE842F07-96C3-4A83-969A-4B82BD29EB90}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EE842F07-96C3-4A83-969A-4B82BD29EB90}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EE842F07-96C3-4A83-969A-4B82BD29EB90}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EE842F07-96C3-4A83-969A-4B82BD29EB90}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using Reactive.Bindings;
@@ -9,7 +10,7 @@ namespace SharedLib.Services;
 public class KitchenTimerService : IKitchenTimerTransient, IKitchenTimerSingleton
 {
     private readonly CompositeDisposable _disposables = new();
-    public readonly ReactiveTimer _timer;
+    private readonly ReactiveTimer _timer;
 
     public ReactivePropertySlim<int> Second { get; }
     public ReactivePropertySlim<TimerStatus> Status { get; }
@@ -26,17 +27,7 @@ public class KitchenTimerService : IKitchenTimerTransient, IKitchenTimerSingleto
             .AddTo(_disposables);
 
         _timer = new ReactiveTimer(TimeSpan.FromSeconds(1)).AddTo(_disposables);
-        _timer.Subscribe(async _ =>
-        {
-            Second.Value--;
-
-            if (Second.Value <= 0)
-            {
-                Status.Value = TimerStatus.Stopped;
-                await Task.Delay(10);
-                TimerEnded?.Invoke(this, EventArgs.Empty);
-            }
-        });
+        _timer.Subscribe(_ => OnTimerEvent());
 
         Second.Where(v => v < 0).Subscribe(_ => Second.Value = 0);
 
@@ -50,8 +41,10 @@ public class KitchenTimerService : IKitchenTimerTransient, IKitchenTimerSingleto
             .Where(v => v == TimerStatus.Stopped)
             .Subscribe(_ => Second.Value = 0);
 
+#if DEBUG
         CombinedStatus
-            .Subscribe(v => Console.WriteLine($"sec: {v!.Second}, status: {v.Status}"));
+            .Subscribe(v => Debug.WriteLine($"sec: {v!.Second}, status: {v.Status}"));
+#endif
     }
 
     public void Dispose()
@@ -69,6 +62,17 @@ public class KitchenTimerService : IKitchenTimerTransient, IKitchenTimerSingleto
     {
         Second.Value = 0;
         Status.Value = TimerStatus.Stopped;
+    }
+
+    private async void OnTimerEvent()
+    {
+        Second.Value--;
+        if (Second.Value <= 0)
+        {
+            Status.Value = TimerStatus.Stopped;
+            await Task.Delay(10);
+            TimerEnded?.Invoke(this, EventArgs.Empty);
+        }
     }
 
     public event EventHandler? TimerEnded;

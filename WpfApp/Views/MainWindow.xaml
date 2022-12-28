@@ -1,0 +1,89 @@
+﻿<Window x:Class="WpfApp.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WpfApp.Views"
+        xmlns:vm="clr-namespace:WpfApp.ViewModels"
+        mc:Ignorable="d"
+        Title="{Binding WindowTitle.Value}" Height="450" Width="800">
+    <Window.DataContext>
+        <vm:MainWindowViewModel/>
+    </Window.DataContext>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="8*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <Label x:Name="LeftOverTime"
+               Content="{Binding LeftOverTime.Value}"
+               HorizontalAlignment="Center" 
+               VerticalAlignment="Center"
+               FontSize="48"
+               Grid.ColumnSpan="6"/>
+
+        <Button x:Name="ButtonHourUp"
+                Content="Hour+"
+                Grid.Row="1" 
+                Grid.Column="0"
+                Command="{Binding HourUpCommand}"
+                IsEnabled="{Binding ButtonHourUpEnabled.Value}"/>
+        <Button x:Name="ButtonHourDown"
+                Content="Hour-"
+                Grid.Row="1"
+                Grid.Column="1"
+                Command="{Binding HourDownCommand}"
+                IsEnabled="{Binding ButtonHourDownEnabled.Value}"/>
+        <Button x:Name="ButtonMinuteUp"
+                Content="Minute+"
+                Grid.Row="1"
+                Grid.Column="2"
+                Command="{Binding MinuteUpCommandy}"
+                IsEnabled="{Binding ButtonMinuteUpEnabled.Value}"/>
+        <Button x:Name="ButtonMinuteDown"
+                Content="Minute-"
+                Grid.Row="1"
+                Grid.Column="3"
+                Command="{Binding MinuteDownCommand}"
+                IsEnabled="{Binding ButtonMinuteDownEnabled.Value}"/>
+        <Button x:Name="ButtonSecondUp"
+                Content="Second+"
+                Grid.Row="1"
+                Grid.Column="4"
+                Command="{Binding SecondUpCommand}"
+                IsEnabled="{Binding ButtonSecondUpEnabled.Value}"/>
+        <Button x:Name="ButtonSecondDown"
+                Content="Second-"
+                Grid.Row="1"
+                Grid.Column="5"
+                Command="{Binding SecondDownCommand}"
+                IsEnabled="{Binding ButtonSecondDownEnabled.Value}"/>
+
+        <Button x:Name="ButtonStartStop"
+                Content="Start"
+                Grid.Row="2"
+                Grid.Column="0"
+                Grid.ColumnSpan="3"
+                Command="{Binding StartStopCommand}"
+                IsEnabled="{Binding ButtonStartStopEnabled.Value}"/>
+        <Button x:Name="ButtonReset"
+                Content="Reset"
+                Grid.Row="2"
+                Grid.Column="3"
+                Grid.ColumnSpan="3"
+                Command="{Binding ResetCommand}"
+                IsEnabled="{Binding ButtonResetEnabled.Value}"/>
+    </Grid>
+</Window>
